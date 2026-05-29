@@ -1,11 +1,10 @@
 import userModel from '../models/user.model.js';
-import jwt from 'jsonwebtoken';
+import { sendEmail } from '../services/mail.services.js';
 
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check for duplicate username / email
     const existingUser = await userModel.findOne({
       $or: [{ email }, { username }],
     });
@@ -17,22 +16,13 @@ export const register = async (req, res) => {
       });
     }
 
-    // Create & save (password is hashed by the pre-save hook)
     const user = await userModel.create({ username, email, password });
 
-    // Sign JWT
-    const token = jwt.sign(
-      { userId: user._id, username: user.username },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    // Send token as httpOnly cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    await sendEmail({
+      to: email,
+      subject: 'Welcome to Perplexity!',
+      html: `<h1>Welcome, ${username}!</h1><p>Thank you for registering at Perplexity. We're excited to have you on board!</p>`,
+      text: `Welcome, ${username}! Thank you for registering at Perplexity. We're excited to have you on board!`,
     });
 
     return res.status(201).json({
@@ -48,7 +38,7 @@ export const register = async (req, res) => {
     console.error('Register error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: error.message || 'Internal server error',
     });
   }
 };
