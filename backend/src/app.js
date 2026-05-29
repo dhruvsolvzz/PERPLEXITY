@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import authRouter from './routes/auth.api.js';
+import authRouter from './routes/auth.routes.js';
 
 const app = express();
 
