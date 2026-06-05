@@ -12,12 +12,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@langchain/google-genai": "^2.1.31",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
     "jsonwebtoken": "^9.0.3",
+    "langchain": "^1.4.4",
     "mongoose": "^9.6.3",
     "nodemailer": "^8.0.9",
     "nodemon": "^3.1.14"

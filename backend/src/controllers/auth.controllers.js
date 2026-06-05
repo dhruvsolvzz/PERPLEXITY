@@ -108,3 +108,71 @@ export async function verifyEmailController(req, res) {
 
   res.send(htmlResponse);
 }
+
+export const loginController = async (req, res) => {
+  // email and password from request body
+  const { email, password } = req.body;
+
+  const user = await userModel.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
+  }
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid credentials',
+    });
+  }
+  if (!user.verified) {
+    return res.status(403).json({
+      success: false,
+      message: 'Email not verified. Please verify your email before logging in.',
+    });
+  }
+
+  const token = jwt.sign(
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+  res.cookie('token', token)
+    .status(200)
+    .json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+
+
+  
+};
+
+export const getMeController = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const user = await userModel.findById(userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+}

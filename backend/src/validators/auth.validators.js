@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 
-// ----- Validation Rules -----
+// ----- Validation Rules for Registration -----
 export const registerValidationRules = [
   body('username')
     .trim()
@@ -28,6 +28,20 @@ export const registerValidationRules = [
     .withMessage('Password must contain at least one uppercase letter')
     .matches(/[0-9]/)
     .withMessage('Password must contain at least one number'),
+];
+// ----- Validation Rules for Login -----
+export const loginValidationRules = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required'),
 ];
 
 // ----- Error Handler Middleware -----
