@@ -1,7 +1,6 @@
 import app from './src/app.js';
-import connectDB from './src/config/database.js';import { testAI } from './src/services/ai.services.js';
+import connectDB from './src/config/database.js';
 
-testAI();
 
 
 const PORT = process.env.PORT || 3000;
